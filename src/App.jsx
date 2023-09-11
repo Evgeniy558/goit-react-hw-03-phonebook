@@ -4,11 +4,21 @@ import { nanoid } from "nanoid";
 import Form from "./components/contactForm/ContactsForm";
 import List from "./components/contactList/ContactList";
 import Filter from "./components/filter/Filter";
+import { saveToLocalStorage } from "./components/serveces/saveToLocalStorage";
+import { getFromLocalStorage } from "./components/serveces/getFromLocalStorage";
 class App extends Component {
   state = {
     contacts: [],
     filter: "",
   };
+
+  componentDidMount() {
+    //get contacts from localStorage for rendering
+    const contacts = getFromLocalStorage();
+    if (contacts && contacts.length) {
+      this.setState({ contacts });
+    }
+  }
 
   getData = (event) => {
     event.preventDefault();
@@ -21,12 +31,17 @@ class App extends Component {
     ) {
       alert(`${name} is already in contacts`);
     } else {
-      this.setState((prevState) => ({
-        contacts: [
-          ...prevState.contacts,
-          { id: nanoid(), name: name, number: number },
-        ],
-      }));
+      this.setState(
+        (prevState) => ({
+          contacts: [
+            ...prevState.contacts,
+            { id: nanoid(), name: name, number: number },
+          ],
+        }),
+        () => {
+          saveToLocalStorage(this.state.contacts);
+        }
+      );
     }
 
     event.currentTarget.reset();
@@ -72,7 +87,6 @@ class App extends Component {
             <h2>Contacts</h2>
             <Filter onChange={this.handleSearch} />
             <List
-              contacts={contacts}
               displayedContacts={displayedContacts}
               onClick={this.deleteContact}
             />
@@ -82,5 +96,4 @@ class App extends Component {
     );
   }
 }
-
 export default App;
