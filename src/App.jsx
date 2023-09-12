@@ -6,9 +6,11 @@ import List from "./components/contactList/ContactList";
 import Filter from "./components/filter/Filter";
 import { saveToLocalStorage } from "./components/serveces/saveToLocalStorage";
 import { getFromLocalStorage } from "./components/serveces/getFromLocalStorage";
+import { filterContacts } from "./components/serveces/filterContacts";
 class App extends Component {
   state = {
     contacts: [],
+    displayedContacts: [],
     filter: "",
   };
 
@@ -20,7 +22,8 @@ class App extends Component {
     }
   }
 
-  getData = (event) => {
+  //add contact to localstorage
+  addContact = (event) => {
     event.preventDefault();
     const name = event.target.elements.name.value;
     const number = event.target.elements.number.value;
@@ -49,39 +52,35 @@ class App extends Component {
 
   handleSearch = (event) => {
     const { value } = event.target;
-    this.setState(
-      (prevState) => ({ filter: (prevState.filter = value) }),
-      () => {
-        this.filter();
-      }
-    );
-  };
-
-  filter = () => {
-    const results = this.state.contacts.filter((el) => {
-      return el.name.toLowerCase().includes(this.state.filter.toLowerCase());
+    this.setState({ filter: value }, () => {
+      const displayedContacts = filterContacts(
+        this.state.contacts,
+        this.state.filter
+      );
+      this.setState({ displayedContacts });
     });
-    return results;
   };
 
   deleteContact = (id) => {
-    return this.setState((prevState) => ({
-      contacts: prevState.contacts.filter((el) => {
-        return el.id !== id;
-      }),
-    }));
+    const contacts = getFromLocalStorage().filter((el) => {
+      return el.id !== id;
+    });
+    this.setState({ contacts });
+    saveToLocalStorage(contacts);
   };
 
   render() {
     const { contacts, filter } = this.state;
-    const displayedContacts = filter ? this.filter() : contacts;
+    const displayedContacts = filter
+      ? filterContacts(contacts, filter)
+      : contacts;
 
     return (
       <div className="App">
         <header className={css.appheader}>
           <section className={css.section}>
             <h1>Phonebook</h1>
-            <Form onSubmit={this.getData} />
+            <Form onSubmit={this.addContact} />
           </section>
           <section className={css.section}>
             <h2>Contacts</h2>

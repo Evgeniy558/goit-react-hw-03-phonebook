@@ -13,7 +13,6 @@ class List extends Component {
 
   render() {
     const { displayedContacts, onClick } = this.props;
-
     return (
       <div>
         {" "}
