@@ -1,6 +1,10 @@
 import css from "./Filter.module.css";
 import PropTypes from "prop-types";
 const Filter = ({ onChange }) => {
+  const getSearchValue = (ev) => {
+    const SearchValue = ev.target.value;
+    onChange(SearchValue);
+  };
   return (
     <div className={css.search_container}>
       <label className={css.label}>
@@ -10,7 +14,7 @@ const Filter = ({ onChange }) => {
           className={css.input}
           type="text"
           name="search"
-          onChange={onChange}
+          onChange={getSearchValue}
         ></input>
       </label>
     </div>
