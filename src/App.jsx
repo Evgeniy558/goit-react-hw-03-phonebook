@@ -25,6 +25,9 @@ class App extends Component {
     if (prevState.contacts !== this.state.contacts) {
       saveToLocalStorage(this.state.contacts);
     }
+    if (this.state.contacts.length === 0) {
+      localStorage.removeItem("contacts");
+    }
   }
   //add contact to localstorage
   addNewContact = (formData) => {
